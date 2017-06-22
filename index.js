@@ -156,8 +156,8 @@ FirebaseServer.prototype = {
 			send({d: {a: 'd', b: {p: path, d: data}}, t: 'd'});
 		}
 
-		function permissionDenied(requestId) {
-			send({d: {r: requestId, b: {s: 'permission_denied', d: 'Permission denied'}}, t: 'd'});
+		function permissionDenied(requestId, result) {
+			send({d: {r: requestId, b: {s: 'permission_denied' + ' info: ' + result.info, d: 'Permission denied'}}, t: 'd'});
 		}
 
 		function replaceServerTimestamp(data) {
@@ -194,9 +194,14 @@ FirebaseServer.prototype = {
 				});
 =======
 		function tryRead(requestId, path) {
-			var result = server._targaryen.as(authData()).read(path);
+			if (!authData()) {
+				return;
+			}
+
+			var data = Object.assign({}, authData(), authData().token);
+			var result = server._targaryen.as(data).read(path);
 			if (!result.allowed) {
-				permissionDenied(requestId);
+				permissionDenied(requestId, result);
 				throw new Error('Permission denied for client to read from ' + path + ': ' + result.info);
 >>>>>>> Migrate to Targaryen 3 (#100)
 			}
@@ -219,9 +224,14 @@ FirebaseServer.prototype = {
 				});
 =======
 		function tryPatch(requestId, path, newData) {
-			var result = server._targaryen.as(authData()).update(path, newData);
+			if (!authData()) {
+				return;
+			}
+
+			var data = Object.assign({}, authData(), authData().token);
+			var result = server._targaryen.as(data).update(path, newData);
 			if (!result.allowed) {
-				permissionDenied(requestId);
+				permissionDenied(requestId, result);
 				throw new Error('Permission denied for client to update at ' + path + ': ' + result.info);
 >>>>>>> Migrate to Targaryen 3 (#100)
 			}
@@ -245,12 +255,18 @@ FirebaseServer.prototype = {
 				});
 =======
 		function tryWrite(requestId, path, newData) {
-			var result = server._targaryen.as(authData()).write(path, newData);
+			if (!authData()) {
+				return;
+			}
+
+			var data = Object.assign({}, authData(), authData().token);
+			var result = server._targaryen.as(data).write(path, newData);
 			if (!result.allowed) {
-				permissionDenied(requestId);
+				permissionDenied(requestId, result);
 				throw new Error('Permission denied for client to write to ' + path + ': ' + result.info);
 >>>>>>> Migrate to Targaryen 3 (#100)
 			}
+
 			server._targaryen = result.newDatabase;
 		}
 
