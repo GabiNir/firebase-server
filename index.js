@@ -159,11 +159,16 @@ FirebaseServer.prototype = {
 		function tryRead(requestId, path, fbRef) {
 			if (server._ruleset) {
 				return ruleSnapshot(fbRef).then(function (dataSnap) {
-					var result = server._ruleset.tryRead(path, dataSnap, authData());
+					if (!authData()) return true
+
+					let data = authData()
+					if (data.token) data = Object.assign({}, data, data.token)
+					var result = server._ruleset.tryRead(path, dataSnap, data);
 					if (!result.allowed) {
 						permissionDenied(requestId);
 						throw new Error('Permission denied for client to read from ' + path + ': ' + result.info);
-					}
+					} 
+
 					return true;
 				});
 			}
@@ -187,7 +192,11 @@ FirebaseServer.prototype = {
 		function tryWrite(requestId, path, fbRef, newData) {
 			if (server._ruleset) {
 				return ruleSnapshot(fbRef).then(function (dataSnap) {
-					var result = server._ruleset.tryWrite(path, dataSnap, newData, authData());
+					if (!authData()) return true
+
+					let data = authData()
+					if (data.token) data = Object.assign({}, data, data.token)
+					var result = server._ruleset.tryWrite(path, dataSnap, newData, data);
 					if (!result.allowed) {
 						permissionDenied(requestId);
 						throw new Error('Permission denied for client to write to ' + path + ': ' + result.info);
