@@ -178,7 +178,11 @@ FirebaseServer.prototype = {
 		function tryPatch(requestId, path, fbRef, newData) {
 			if (server._ruleset) {
 				return ruleSnapshot(fbRef).then(function (dataSnap) {
-					var result = server._ruleset.tryPatch(path, dataSnap, newData, authData());
+					if (!authData()) return true
+
+					let data = authData()
+					if (data.token) data = Object.assign({}, data, data.token)
+					var result = server._ruleset.tryPatch(path, dataSnap, newData, data);
 					if (!result.allowed) {
 						permissionDenied(requestId);
 						throw new Error('Permission denied for client to update at ' + path + ': ' + result.info);
