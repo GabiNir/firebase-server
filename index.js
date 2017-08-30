@@ -170,29 +170,6 @@ FirebaseServer.prototype = {
 			}
 		}
 
-<<<<<<< HEAD
-		function ruleSnapshot(fbRef) {
-			return exportData(fbRef.root).then(function (exportVal) {
-				return new RuleDataSnapshot(RuleDataSnapshot.convert(exportVal));
-			});
-		}
-
-		function tryRead(requestId, path, fbRef) {
-			if (server._ruleset) {
-				return ruleSnapshot(fbRef).then(function (dataSnap) {
-					if (!authData()) return true
-
-					let data = authData()
-					if (data.token) data = Object.assign({}, data, data.token)
-					var result = server._ruleset.tryRead(path, dataSnap, data);
-					if (!result.allowed) {
-						permissionDenied(requestId);
-						throw new Error('Permission denied for client to read from ' + path + ': ' + result.info);
-					} 
-
-					return true;
-				});
-=======
 		function tryRead(requestId, path) {
 			if (!authData()) {
 				return;
@@ -203,26 +180,9 @@ FirebaseServer.prototype = {
 			if (!result.allowed) {
 				permissionDenied(requestId, result);
 				throw new Error('Permission denied for client to read from ' + path + ': ' + result.info);
->>>>>>> Migrate to Targaryen 3 (#100)
 			}
 		}
 
-<<<<<<< HEAD
-		function tryPatch(requestId, path, fbRef, newData) {
-			if (server._ruleset) {
-				return ruleSnapshot(fbRef).then(function (dataSnap) {
-					if (!authData()) return true
-
-					let data = authData()
-					if (data.token) data = Object.assign({}, data, data.token)
-					var result = server._ruleset.tryPatch(path, dataSnap, newData, data);
-					if (!result.allowed) {
-						permissionDenied(requestId);
-						throw new Error('Permission denied for client to update at ' + path + ': ' + result.info);
-					}
-					return true;
-				});
-=======
 		function tryPatch(requestId, path, newData) {
 			if (!authData()) {
 				return;
@@ -233,27 +193,10 @@ FirebaseServer.prototype = {
 			if (!result.allowed) {
 				permissionDenied(requestId, result);
 				throw new Error('Permission denied for client to update at ' + path + ': ' + result.info);
->>>>>>> Migrate to Targaryen 3 (#100)
 			}
 			server._targaryen = result.newDatabase;
 		}
 
-<<<<<<< HEAD
-		function tryWrite(requestId, path, fbRef, newData) {
-			if (server._ruleset) {
-				return ruleSnapshot(fbRef).then(function (dataSnap) {
-					if (!authData()) return true
-
-					let data = authData()
-					if (data.token) data = Object.assign({}, data, data.token)
-					var result = server._ruleset.tryWrite(path, dataSnap, newData, data);
-					if (!result.allowed) {
-						permissionDenied(requestId);
-						throw new Error('Permission denied for client to write to ' + path + ': ' + result.info);
-					}
-					return true;
-				});
-=======
 		function tryWrite(requestId, path, newData) {
 			if (!authData()) {
 				return;
@@ -264,7 +207,6 @@ FirebaseServer.prototype = {
 			if (!result.allowed) {
 				permissionDenied(requestId, result);
 				throw new Error('Permission denied for client to write to ' + path + ': ' + result.info);
->>>>>>> Migrate to Targaryen 3 (#100)
 			}
 
 			server._targaryen = result.newDatabase;
